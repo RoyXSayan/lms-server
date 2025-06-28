@@ -1,0 +1,7 @@
+# .gitignore
+node_modules
+.env
+dist
+.env.local
+.vscode
+.DS_Store
