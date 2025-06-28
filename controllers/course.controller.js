@@ -18,10 +18,16 @@ export const createCourse = async (req, res) => {
       });
     }
 
+    const user = await User.findById(req.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const course = await Course.create({
       courseTitle,
       category,
       creator: req.id,
+      instructor: user._id,
     });
 
     return res.status(201).json({
@@ -36,8 +42,10 @@ export const createCourse = async (req, res) => {
   }
 };
 
+//export a function called searchCourse that takes in a request and response object
 export const searchCourse = async (req, res) => {
   try {
+    //destructure the query object from the request, defaulting to empty strings and empty arrays if not provided
     const { query = "", categories = [], sortByPrice = "" } = req.query;
 
     //create search query
@@ -70,11 +78,13 @@ export const searchCourse = async (req, res) => {
       .populate({ path: "creator", select: "name photoURL" })
       .sort(sortOptions);
 
+    //return a success response with the courses
     return res.status(200).json({
       success: true,
       courses: courses || [],
     });
   } catch (error) {
+    //log any errors that occur
     console.log(error);
   }
 };
